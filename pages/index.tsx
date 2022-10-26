@@ -1,9 +1,10 @@
 import { Button, Group } from "@mantine/core";
+import Layout from "../components/Layout";
 
 export default function IndexPage() {
   return (
-    <Group mt={50} position="center">
+    <Layout>
       <Button size="xl">Welcome to Mantine!</Button>
-    </Group>
+    </Layout>
   );
 }
