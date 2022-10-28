@@ -1,4 +1,4 @@
-enum WebflowFieldType {
+export enum WebflowFieldType {
     bool = "Bool",
     color = "Color",
     date = "Date",
@@ -12,7 +12,8 @@ enum WebflowFieldType {
     option = "Option",
     plainText = "PlainText",
     richText = "RichText",
-    video = "Video"
+    video = "Video",
+    user = "User"
 }
 
 interface IWebflowValidation {
@@ -37,7 +38,7 @@ export interface IWebflowField {
     type: WebflowFieldType,
     editable: boolean,
     required: boolean,
-    validations: IWebflowValidation
+    validations: IWebflowValidation | undefined
 }
 
 export interface IWebflowCollection {

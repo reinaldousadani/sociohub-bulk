@@ -1,5 +1,6 @@
-import { Button, SimpleGrid } from "@mantine/core";
-import { IWebflowField } from "../types/webflow";
+import {  SimpleGrid } from "@mantine/core";
+import {  IWebflowCollection } from "../types/webflow";
+import WebflowCollectionForm from "./WebflowCollectionForm";
 
 //TODO
 //1. Create a dynamic form that checks the validation object from Webflow Response
@@ -7,11 +8,9 @@ import { IWebflowField } from "../types/webflow";
 //3. Generate public URL after saving to firebase storage
 
 export default function Forms({
-  fields,
-  slug,
+  collection
 }: {
-  fields: IWebflowField[] | undefined;
-  slug: string | undefined;
+  collection: IWebflowCollection | undefined
 }) {
 
   return (
@@ -31,7 +30,7 @@ export default function Forms({
         };
       }}
     >
-      {slug === "sellers" ? <p>Seller Form Here</p> : slug === "products" ? <p>Products Form Here</p> : <p>Collection not found!</p>}
+      <WebflowCollectionForm fields={collection?.fields} />
     </SimpleGrid>
   );
 }

@@ -13,6 +13,7 @@ export default function Upload() {
     collectionFetcher
   );
 
+  console.log("DATA: ", data);
 
   if (!data && !error)
     return (
@@ -32,7 +33,7 @@ export default function Upload() {
   return (
     <Layout>
       <h1 style={{ marginTop: "1rem", marginBottom: "1rem" }}>{data?.name}</h1>
-      <Forms fields={data?.fields} slug={data?.slug} />
+      <Forms collection={data} />
     </Layout>
   );
 }
