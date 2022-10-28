@@ -1,8 +1,9 @@
 import axios from "axios";
 import { NextApiRequest, NextApiResponse } from "next";
 import api from "../../../libs/webflowApi";
+import { IWebflowCollection } from "../../../types/webflow";
 
-export const collectionFetcher = (url: string) =>
+export const collectionFetcher = (url: string): Promise<IWebflowCollection> =>
   axios.get(url).then((res) => res.data);
 
 export default async function handler(
@@ -17,11 +18,9 @@ export default async function handler(
   }
 
   try {
-    const sellerCollection = await api.collection({ collectionId: query });
+    const collections = await api.collection({ collectionId: query });
 
-    console.log("SellerCol: ", sellerCollection);
-
-    return res.status(200).json({ hola: "World" });
+    return res.status(200).json(collections);
   } catch (error) {
     console.log(error);
   }
