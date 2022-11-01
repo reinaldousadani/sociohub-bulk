@@ -1,9 +1,11 @@
 import {  SimpleGrid } from "@mantine/core";
+import SellerForm from "./SellerForm";
+import ProductForm from "./ProductForm";
 
 export default function Forms({
-  collectionId
+  collectionName
 }: {
-  collectionId: string
+  collectionName: string
 }) {
 
   return (
@@ -23,7 +25,7 @@ export default function Forms({
         };
       }}
     >
-      <h1>{collectionId}</h1>
+      {collectionName === "sellers" ? <SellerForm /> : collectionName === "products" ? <ProductForm /> : <p>No collection found</p>}
     </SimpleGrid>
   );
 }
