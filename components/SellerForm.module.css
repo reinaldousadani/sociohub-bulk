@@ -10,3 +10,14 @@
     gap: 1rem;
     margin-top: 1rem;
 }
+
+.mantine-form-label {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #C1C2C5;
+    word-break: break-word;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+}
+

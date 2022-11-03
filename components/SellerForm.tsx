@@ -4,6 +4,14 @@ import { TextInput, Button, Divider, Center, Image } from "@mantine/core";
 import styles from "./SellerForm.module.css";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { showNotification } from "@mantine/notifications";
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
+
+// import RichTextEditor from "@mantine/rte";
+
+const DynamicRTE = dynamic(() => import("@mantine/rte"), {
+  ssr: false,
+});
 
 const sellerCollectionId = "6258313485561f0739b03126";
 
@@ -167,7 +175,7 @@ export default function SellerForm() {
                 }}
                 alt="Uploaded Image"
                 style={{
-                  maxWidth: '300px'
+                  maxWidth: "300px",
                 }}
               />
             ) : (
@@ -181,6 +189,16 @@ export default function SellerForm() {
           disabled
           {...sellerForm.getInputProps(`sellers.${idx}.image`)}
         />
+
+        <div>
+          <p className={styles[`mantine-form-label`]}>
+            {`Seller's Description`}
+          </p>
+          <DynamicRTE
+            controls={[["image", "orderedList", "unorderedList"]]}
+            {...sellerForm.getInputProps(`sellers.${idx}.sellerDescription`)}
+          />
+        </div>
 
         <Button
           onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
