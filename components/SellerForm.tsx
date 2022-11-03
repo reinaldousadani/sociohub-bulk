@@ -1,15 +1,13 @@
 import { useForm } from "@mantine/form";
 import { randomId } from "@mantine/hooks";
-import { TextInput, Button, Divider, Center } from "@mantine/core";
+import { TextInput, Button, Divider, Center, Image } from "@mantine/core";
 import styles from "./SellerForm.module.css";
-import { Dropzone, IMAGE_MIME_TYPE, FileWithPath } from "@mantine/dropzone";
-import { useState } from "react";
+import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
+import { showNotification } from "@mantine/notifications";
 
 const sellerCollectionId = "6258313485561f0739b03126";
 
 export default function SellerForm() {
-  const [sellerImage, setSellerImage] = useState<FileWithPath[]>([]);
-
   const handleAddMoreSeller = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
@@ -22,6 +20,7 @@ export default function SellerForm() {
       updatedOn: "",
       publishedOn: "",
       image: "",
+      imageDataUrl: "",
       sellerDescription: "",
       location: "",
       categories: "",
@@ -44,6 +43,10 @@ export default function SellerForm() {
     sellerForm.removeListItem("sellers", idx);
   };
 
+  const generateLocalImageURL = (file: FileWithPath) => {
+    return URL.createObjectURL(file);
+  };
+
   const sellerForm = useForm({
     initialValues: {
       sellers: [
@@ -56,6 +59,7 @@ export default function SellerForm() {
           updatedOn: "",
           publishedOn: "",
           image: "",
+          imageDataUrl: "",
           sellerDescription: "",
           location: "",
           categories: "",
@@ -122,13 +126,53 @@ export default function SellerForm() {
           }}
         />
         <Dropzone
-          onDrop={(files) => setSellerImage(files)}
-          onReject={(files) => console.log("rejected files", files)}
+          onDrop={(files) => {
+            if (files.length > 1) {
+              showNotification({
+                title: "Limit Exceeded!",
+                message: "Only one image is allowed for Seller's Image",
+                color: "red",
+              });
+              return;
+            }
+            const fileDataURL = generateLocalImageURL(files[0]);
+            sellerForm.setFieldValue(
+              `sellers.${idx}.imageDataUrl`,
+              fileDataURL
+            );
+          }}
+          onReject={(rejections) => {
+            rejections.forEach((rejection) => {
+              rejection.errors.forEach((error) => {
+                showNotification({
+                  title: "File Rejected!",
+                  message: `${error.message}`,
+                  color: "red",
+                });
+              });
+            });
+          }}
           maxSize={3 * 1024 ** 2}
           accept={IMAGE_MIME_TYPE}
         >
           <Center>
-            <p>{`Drag and drop or click to select Seller's Image`}</p>
+            {sellerForm.values.sellers[idx].imageDataUrl ? (
+              <Image
+                src={sellerForm.values.sellers[idx].imageDataUrl}
+                imageProps={{
+                  onLoad: () =>
+                    URL.revokeObjectURL(
+                      sellerForm.values.sellers[idx].imageDataUrl
+                    ),
+                }}
+                alt="Uploaded Image"
+                style={{
+                  maxWidth: '300px'
+                }}
+              />
+            ) : (
+              <p>{`Drag and drop or click to select Seller's Image`}</p>
+            )}
           </Center>
         </Dropzone>
         <TextInput
