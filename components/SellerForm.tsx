@@ -1,19 +1,73 @@
-import { useForm } from "@mantine/form";
+import { useForm, UseFormReturnType } from "@mantine/form";
 import { randomId } from "@mantine/hooks";
-import { TextInput, Button, Divider, Center, Image } from "@mantine/core";
+import {
+  TextInput,
+  Button,
+  Divider,
+  Center,
+  Image,
+  MultiSelect,
+  Skeleton,
+} from "@mantine/core";
 import styles from "./SellerForm.module.css";
 import { Dropzone, FileWithPath, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { showNotification } from "@mantine/notifications";
 import dynamic from "next/dynamic";
-import { Suspense } from "react";
-
-// import RichTextEditor from "@mantine/rte";
+import axios from "axios";
+import useSWR from "swr";
+import { IWebflowCollectionItemCategories } from "../types/webflow";
 
 const DynamicRTE = dynamic(() => import("@mantine/rte"), {
   ssr: false,
 });
 
-const sellerCollectionId = "6258313485561f0739b03126";
+function CategoriesForm({
+  label,
+  placeholder,
+  form,
+  formField,
+}: {
+  label: string;
+  placeholder: string;
+  form: UseFormReturnType<any, any>;
+  formField: string;
+}) {
+  const categoriesFetcher = (url: string) =>
+    axios.get(url).then((res) => res.data);
+
+  const { data, error } = useSWR("/api/categories", categoriesFetcher);
+
+  if (!data && !error)
+    return (
+      <div>
+        <p className={styles[`mantine-form-label`]}>{label}</p>
+        <Skeleton>
+          <MultiSelect data={[]} />
+        </Skeleton>
+      </div>
+    );
+
+  if (error)
+    return (
+      <Center>
+        <p>Something goes wrong..</p>
+      </Center>
+    );
+
+  return (
+    <MultiSelect
+      data={data.items.map((elem: IWebflowCollectionItemCategories) => {
+        return {
+          label: elem.name,
+          value: elem.slug,
+        };
+      })}
+      label={label}
+      placeholder={placeholder}
+      {...form.getInputProps(formField)}
+    />
+  );
+}
 
 export default function SellerForm() {
   const handleAddMoreSeller = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -31,7 +85,7 @@ export default function SellerForm() {
       imageDataUrl: "",
       sellerDescription: "",
       location: "",
-      categories: "",
+      categories: [],
       mainLink: "",
       instagramLink: "",
       facebookLink: "",
@@ -70,7 +124,7 @@ export default function SellerForm() {
           imageDataUrl: "",
           sellerDescription: "",
           location: "",
-          categories: "",
+          categories: [],
           mainLink: "",
           instagramLink: "",
           facebookLink: "",
@@ -200,14 +254,59 @@ export default function SellerForm() {
           />
         </div>
 
-        <Button
-          onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
-            deleteSellerByIndex(e, idx)
-          }
-          color={"red"}
-        >
-          Remove this seller
-        </Button>
+        <TextInput
+          label="Location"
+          placeholder="Enter Seller's Location"
+          {...sellerForm.getInputProps(`sellers.${idx}.location`)}
+        />
+
+        <CategoriesForm
+          label="Categories"
+          placeholder="Enter Seller's Categories"
+          form={sellerForm}
+          formField={`sellers.${idx}.categories`}
+        />
+
+        <TextInput
+          label="Main Link"
+          placeholder="Enter Seller's Main Link"
+          {...sellerForm.getInputProps(`sellers.${idx}.mainLink`)}
+        />
+
+        <TextInput
+          label="Instagram Link"
+          placeholder="Enter Seller's Instagram Link"
+          {...sellerForm.getInputProps(`sellers.${idx}.instagramLink`)}
+        />
+
+        <TextInput
+          label="Shopee Link"
+          placeholder="Enter Seller's Shopee Link"
+          {...sellerForm.getInputProps(`sellers.${idx}.shopeeLink`)}
+        />
+
+        <TextInput
+          label="Tokopedia Link"
+          placeholder="Enter Seller's Tokopedia Link"
+          {...sellerForm.getInputProps(`sellers.${idx}.tokopediaLink`)}
+        />
+
+        <TextInput
+          label="Other Link"
+          placeholder="Enter Seller's Other Link"
+          {...sellerForm.getInputProps(`sellers.${idx}.otherLink`)}
+        />
+
+        {sellerForm.values.sellers.length !== 1 && (
+          <Button
+            onClick={(e: React.MouseEvent<HTMLButtonElement>) =>
+              deleteSellerByIndex(e, idx)
+            }
+            color={"red"}
+          >
+            Remove this seller
+          </Button>
+        )}
 
         <Divider />
       </div>
