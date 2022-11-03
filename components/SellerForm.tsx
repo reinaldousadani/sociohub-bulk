@@ -16,6 +16,8 @@ import dynamic from "next/dynamic";
 import axios from "axios";
 import useSWR from "swr";
 import { IWebflowCollectionItemCategories } from "../types/webflow";
+import { MutableRefObject, useRef } from "react";
+import _ from "lodash-es";
 
 const DynamicRTE = dynamic(() => import("@mantine/rte"), {
   ssr: false,
@@ -70,6 +72,13 @@ function CategoriesForm({
 }
 
 export default function SellerForm() {
+  const nameRef = useRef();
+  const imageRef = useRef();
+
+  const scrollToRef = (ref: MutableRefObject<HTMLElement>) => {
+    ref.current.scrollIntoView();
+  };
+
   const handleAddMoreSeller = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
@@ -144,6 +153,8 @@ export default function SellerForm() {
           label="Seller's Name"
           placeholder="Enter Seller's Name"
           {...sellerForm.getInputProps(`sellers.${idx}.name`)}
+          ref={nameRef}
+          required
         />
         <TextInput
           label="Slug"
@@ -240,8 +251,10 @@ export default function SellerForm() {
         <TextInput
           label="Image"
           placeholder="Upload your image above to fill this field"
+          required
           disabled
           {...sellerForm.getInputProps(`sellers.${idx}.image`)}
+          ref={imageRef}
         />
 
         <div>
